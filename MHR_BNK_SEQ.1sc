@@ -1,0 +1,131 @@
+//------------------------------------------------
+//--- 010 Editor v14.0 Script File
+//
+//      File: mhr-bnk-seq.1sc
+//   Authors: Fanyu Meng
+//   Version: 0.1
+//   Purpose: Edit HIRC item entries based on song info.
+//------------------------------------------------
+const string TITLE = "MHR HIRC Sequence Editing";
+
+uint32 randUID() {
+    local uint32 num1 = Random(2 << 16 - 1);
+    local uint32 num2 = Random(2 << 16 - 1);
+    return (num1 << 16) | num2;
+}
+
+if(!exists(numHIRCItems)) {
+    MessageBox(idOk, TITLE, "Invalid sequence template. You may need to run mhr-bnk.bt first.");
+}
+
+if(numHIRCItems != 7 
+    || item[0].type != 11 || item[1].type != 10 
+    || item[2].type != 11 || item[3].type != 10 
+    || item[4].type != 1 || item[5].type != 1 || item[6].type != 13 ) {
+    MessageBox(idOk, TITLE, "Invalid sequence template.");
+}
+
+local uint32 wemId = InputNumber(TITLE, "Wem ID:", "0");
+if(wemId == BAD_VALUE) {
+    MessageBox(idOk, TITLE, "Invalid wem ID.");
+    return -1;
+}
+    
+local float songStart = InputFloat(TITLE, "Song start (s):", "0");
+if(wemId == BAD_VALUE) {
+    MessageBox(idOk, TITLE, "Invalid song start value.");
+    return -1;
+}  
+    
+local float loopStart = InputFloat(TITLE, "Loop start (s):", "0");
+if(wemId == BAD_VALUE) {
+    MessageBox(idOk, TITLE, "Invalid loop start value.");
+    return -1;
+}
+    
+local float loopEnd = InputFloat(TITLE, "Loop end (s):", "0");
+if(wemId == BAD_VALUE) {
+    MessageBox(idOk, TITLE, "Invalid loop end value.");
+    return -1;
+}
+    
+local float songTotal = InputFloat(TITLE, "Song total (s):", "0");
+if(wemId == BAD_VALUE) {
+    MessageBox(idOk, TITLE, "Invalid song total value.");
+    return -1;
+}
+
+local float volumn = InputFloat(TITLE, "Volumn (Db):", "-7");
+if(wemId == BAD_VALUE) {
+    MessageBox(idOk, TITLE, "Invalid volumn.");
+    return -1;
+}
+
+songStart *= -1000;
+songTotal *= 1000;
+loopStart *= -1000;
+loopEnd = loopEnd * 1000 - songTotal;
+
+local float a = -loopStart - songTotal;
+local float b = songStart - loopStart;
+local float c = loopEnd - a;
+local float d = -songStart - songTotal;
+
+// randomly create node uids
+local uint32 uid0 = randUID();
+item[0].uid = uid0;
+item[1].musicNodeParams.children.childId[0] = uid0;
+
+local uint32 uid1 = randUID();
+item[1].uid = uid1;
+item[0].nodeBaseParam.parentId = uid1;
+item[6].musicNodeParams.children.childId[0] = uid1;
+item[6].playlistItems[1].segmentId = uid1;
+
+local uint32 uid2 = randUID();
+item[2].uid = uid2;
+item[3].musicNodeParams.children.childId[0] = uid2;
+
+local uint32 uid3 = randUID();
+item[3].uid = uid3;
+item[2].nodeBaseParam.parentId = uid3;
+item[6].musicNodeParams.children.childId[1] = uid3;
+item[6].playlistItems[2].segmentId = uid3;
+
+local uint32 uid4 = randUID();
+item[4].uid = uid4;
+item[6].musicNodeParams.nodeBaseParam.stateChunk.stateGroups[0].states[0].stateInstanceId = uid4;
+
+local uint32 uid5 = randUID();
+item[5].uid = uid5;
+item[6].musicNodeParams.nodeBaseParam.stateChunk.stateGroups[1].states[0].stateInstanceId = uid5;
+
+local uint32 uid6 = randUID();
+item[6].uid = uid6;
+item[1].musicNodeParams.nodeBaseParam.parentId = uid6;
+item[3].musicNodeParams.nodeBaseParam.parentId = uid6;
+
+// edit wem id
+item[0].sources[0].sourceId = wemId;
+item[0].playlistItems[0].sourceId = wemId;
+item[2].sources[0].sourceId = wemId;
+item[2].playlistItems[0].sourceId = wemId;
+
+// edit loop values
+item[0].playlistItems[0].playAt = songStart;
+item[0].playlistItems[0].beginTrimOffset = -songStart;
+item[0].playlistItems[0].endTrimOffset = a;
+item[0].playlistItems[0].srcDuration = songTotal;
+
+item[1].duration = b;
+item[1].markers[1].pos = b;
+
+item[2].playlistItems[0].playAt = loopStart;
+item[2].playlistItems[0].beginTrimOffset = -loopStart;
+item[2].playlistItems[0].endTrimOffset = loopEnd;
+item[2].playlistItems[0].srcDuration = songTotal;
+
+item[3].duration = c;
+item[3].markers[1].pos = c;
+
+Printf("Sequence container uid: %Ld\n", uid6);
