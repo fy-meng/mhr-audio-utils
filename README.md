@@ -2,6 +2,8 @@
 
 Useful 010 templates/scripts for Monster Hunter: Rise audio modding.
 
+__For a step-by-step tutorial on how to inject music to arena maps, see [wiki](https://github.com/fy-meng/mhr-audio-utils/wiki/Tutorials#arena-music-injection-tutorial).__
+
 ## File Descriptions and Usages
 
 ### `MHR_BNK.bt`
