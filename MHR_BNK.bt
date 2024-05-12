@@ -41,9 +41,45 @@ typedef struct HIRCSection {
     }
 };
 
-void parseSection() {
+typedef struct DIDXSection {
+    char name[4];
+    uint32 size;
 
-}
+    struct DIDXItem {
+        uint32 wemId;
+        uint32 pos;
+        uint32 size;
+    } items[size / 12];
+};
+
+typedef struct DATASection {
+    char name[4];
+    uint32 size;
+
+    if(!exists(didx)) {
+        MessageBox(idOk, TITLE, "Invalid BNK: DIDX section does not exists.");
+    }
+
+    typedef struct DATAItem (int size, int pad) {
+        ubyte data[size];
+        if(pad)
+            byte padding[pad];
+    };
+
+    local int i;
+    local int pad;
+    for(i = 0; i < didx.size / 12; i++) {   
+        if(i % 2 == 0) 
+            SetStyle(sSection1);
+        else
+            SetStyle(sSection2);     
+        if(i != didx.size / 12 - 1) {
+            DATAItem items(didx.items[i].size, didx.items[i + 1].pos - didx.items[i].pos - didx.items[i].size);
+        } else {
+            DATAItem items(didx.items[i].size, 0);
+        }
+    }
+};
 
 typedef struct HIRCPropBundle (int sizeId) {
     switch(sizeId) {
@@ -473,6 +509,12 @@ if(start == "BKHD"){
             case "HIRC":
                 HIRCSection hirc;
                 break;
+            case "DIDX":
+                DIDXSection didx;
+                break;
+            case "DATA":
+                DATASection data;
+                break;
             default:
                 Section section;
                 break;
@@ -486,4 +528,3 @@ if(start == "BKHD"){
         numHIRCItems++;
     }
 }
-
