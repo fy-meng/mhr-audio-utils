@@ -4,16 +4,13 @@
 //      File: mhr-bnk-seq.1sc
 //   Authors: Fanyu Meng
 //   Version: 0.1
-//   Purpose: Inject a music into `natives\STM\Sound\Wwise\bgm_special01_ev_str.bnk.2.X64`.
+//   Purpose: Add a trigger into `natives\STM\Sound\Wwise\bgm_special01_ev_str.bnk.2.X64`.
 //------------------------------------------------
-const string TITLE = "MHR Arena BNK Sequence Injector";
+const string TITLE = "MHR Arena BNK Trigger Adder";
 const int SWITCH_ID_0 = 41;
 const int SWITCH_ID_1 = 116;
 const int TYPE_SEQ_CNTR = 12;
 const int TREE_NODE_SIZE = 12;
-
-const int SEQ_SIZE = 810;
-const int SEQ_NUM_ITEMS = 7;
 
 const uint HASH_TYPE1 = 408582742;
 const uint HASH_FIELD = 514358619;
@@ -33,25 +30,6 @@ if(hash == BAD_VALUE) {
     MessageBox(idOk, TITLE, "Invalid sequence container UID.");
     return -1;
 }
-
-// ======== insert the new sequence ========
-local string filename = InputOpenFileName("Choose modified sequence template:", "All files (*.*)|*.*");
-if(Strlen(filename) == 0) {
-    MessageBox(idOk, TITLE, "Error: Invalid file.");
-    return -1;
-}
-local int prevFileSize = FileSize();
-if(InsertFile(filename, FileSize()) < 0) {
-    MessageBox(idOk, TITLE, "An error occured opening file '%s'.", filename);
-    return -1;
-}
-if(FileSize() - prevFileSize != SEQ_SIZE) {
-    MessageBox(idOk, TITLE, "Error: sequence file size is not compatible.");
-    return -1;
-}
-
-hirc.size += SEQ_SIZE;
-hirc.numHIRCItems += SEQ_NUM_ITEMS;
 
 // ======== handle the second tree ========
 // The node to be inserted should be 
