@@ -7,201 +7,260 @@
 //   Purpose: Parse MHRise .bnk sound bank files
 //------------------------------------------------
 
-typedef struct Section {
+typedef struct Section
+{
     char name[4];
     uint32 size;
     byte data[size];
 };
 
-typedef struct BKHDSection {
+typedef struct BKHDSection
+{
     char name[4];
     uint32 size;
-    
+
     uint32 bankGeneratorVersion;
-    uint32 soundBankId;
-    uint32 languageId;
+    uint32 soundBankID;
+    uint32 languageID;
     uint32 altValues;
-    uint32 projectId;
-    if(size - 20 > 0)
+    uint32 projectID;
+    if (size - 20 > 0)
         byte padding[size - 20];
 };
 
-typedef struct HIRCSection {
+typedef struct HIRCSection
+{
     char name[4];
     uint32 size;
-    
+
     uint32 numHIRCItems;
 
-    if(numHIRCItems > 0) {
-        struct HIRCItems {
+    if (numHIRCItems > 0)
+    {
+        struct HIRCItems
+        {
             local int i;
-            for(i = 0; i < numHIRCItems; i++)
+            for (i = 0; i < numHIRCItems; i++)
                 parseHIRCItem(i % 2);
         } items;
     }
 };
 
-typedef struct DIDXSection {
+typedef struct DIDXSection
+{
     char name[4];
     uint32 size;
 
-    struct DIDXItem {
-        uint32 wemId;
+    struct DIDXItem
+    {
+        uint32 wemID;
         uint32 pos;
         uint32 size;
     } items[size / 12];
 };
 
-typedef struct DATASection {
+typedef struct DATASection
+{
     char name[4];
     uint32 size;
 
-    if(!exists(didx)) {
-        MessageBox(idOk, TITLE, "Invalid BNK: DIDX section does not exists.");
+    if (!exists(didx))
+    {
+        MessageBox(IDOk, TITLE, "InvalID BNK: DIDX section does not exists.");
     }
 
-    typedef struct DATAItem (int size, int pad) {
+    typedef struct DATAItem(int size, int pad)
+    {
         ubyte data[size];
-        if(pad)
+        if (pad)
             byte padding[pad];
     };
 
     local int i;
     local int pad;
-    for(i = 0; i < didx.size / 12; i++) {   
-        if(i % 2 == 0) 
+    for (i = 0; i < didx.size / 12; i++)
+    {
+        if (i % 2 == 0)
             SetStyle(sSection1);
         else
-            SetStyle(sSection2);     
-        if(i != didx.size / 12 - 1) {
+            SetStyle(sSection2);
+        if (i != didx.size / 12 - 1)
+        {
             DATAItem items(didx.items[i].size, didx.items[i + 1].pos - didx.items[i].pos - didx.items[i].size);
-        } else {
+        }
+        else
+        {
             DATAItem items(didx.items[i].size, 0);
         }
     }
 };
 
-typedef struct HIRCPropBundle (int sizeId) {
-    switch(sizeId) {
-        case 1:
-            ubyte numProps;
-            break;
-        case 2:
-            uint16 numProps;
-            break;
-        case 4:
-            uint32 numProps;
-            break;
-        case 8:
-            uint64 numProps;
-            break;
-        default:
-            Assert(false, "Error: invalid type");
+typedef struct HIRCPropBundle(int sizeID)
+{
+    switch (sizeID)
+    {
+    case 1:
+        ubyte numProps;
+        break;
+    case 2:
+        uint16 numProps;
+        break;
+    case 4:
+        uint32 numProps;
+        break;
+    case 8:
+        uint64 numProps;
+        break;
+    default:
+        Assert(false, "Error: invalID type");
     }
-    typedef struct HIRCPropList (int sizeId) {
+    typedef struct HIRCPropList(int sizeID)
+    {
         local int i;
-        for(i = 0; i < numProps; i++) {
-            switch(sizeId) {
-                case 1:
-                    ubyte id;
-                    break;
-                case 2:
-                    uint16 id;
-                    break;
-                case 4:
-                    uint32 id;
-                    break;
-                case 8:
-                    uint64 id;
-                    break;
-                default:
-                    Assert(false, "Error: invalid type");
+        for (i = 0; i < numProps; i++)
+        {
+            switch (sizeID)
+            {
+            case 1:
+                ubyte ID;
+                break;
+            case 2:
+                uint16 ID;
+                break;
+            case 4:
+                uint32 ID;
+                break;
+            case 8:
+                uint64 ID;
+                break;
+            default:
+                Assert(false, "Error: invalID type");
             }
-            FSkip(sizeId * (numProps - i - 1) + sizeof(float) * i);
+            FSkip(sizeID * (numProps - i - 1) + sizeof(float) * i);
             float value;
-            FSeek(FTell() - sizeId * (numProps - i - 1) - sizeof(float) * (i + 1));
+            FSeek(FTell() - sizeID * (numProps - i - 1) - sizeof(float) * (i + 1));
         }
         FSkip(4 * numProps);
-    }; 
-    if(numProps > 0)
-        HIRCPropList props(sizeId);
+    };
+    if (numProps > 0)
+        HIRCPropList props(sizeID);
 };
 
-typedef struct NodeBaseParam {
-    struct InitialFxParams {
-        ubyte isOverrideParentFx;
+typedef struct RTPCGraphPoint
+{
+    float from;
+    float to;
+    uint32 interp;
+};
+
+typedef struct NodeBaseParam
+{
+    struct InitialFxParams
+    {
+        ubyte isOverrIDeParentFx;
         ubyte numFx;
     } initialFxParams;
-    ubyte isOverrideParentMetadata;
+    ubyte isOverrIDeParentMetadata;
     ubyte numFx;
-    ubyte overrideAttachementParams;
-    uint32 overrideBusId;
-    uint32 parentId;
+    ubyte overrIDeAttachementParams;
+    uint32 overrIDeBusID;
+    uint32 parentID;
     ubyte bitVec;
-    struct NodeInitialParams {
+    struct NodeInitialParams
+    {
         HIRCPropBundle props(1);
         HIRCPropBundle propRangedModifiers(1);
     } nodeInitialParams;
     ubyte posParams;
-    switch(posParams) {
-        case 0:
-            break;
-        case 3:
-            ubyte bits3d;
-            break;
-        default:
-            Assert(false, "Error: unknown posParams");
+    switch (posParams)
+    {
+    case 0:
+        break;
+    case 3:
+        ubyte bits3d;
+        break;
+    default:
+        Assert(false, "Error: unknown posParams");
     }
     ubyte auxBitVec;
     uint32 reflectionsAuxBus;
-    struct AdvSettingsParam {
+    struct AdvSettingsParam
+    {
         ubyte bitVec1;
         ubyte virtualQueueBehavior;
         uint16 maxNumInstance;
         ubyte belowThreasholdBehavior;
         ubyte bitVec2;
     } advSettingsParam;
-    struct StateChunk {
+    struct StateChunk
+    {
         ubyte numStateProps;
-        if(numStateProps > 0) {
-            struct StateProp {
-                ubyte id;
+        if (numStateProps > 0)
+        {
+            struct StateProp
+            {
+                ubyte ID;
                 ubyte accumType;
                 ubyte inDb;
             } stateProps[numStateProps];
         }
         ubyte numStateGroups;
-        if(numStateGroups > 0) {
-            struct StateGroup {
-                uint32 stateGroupId;
+        if (numStateGroups > 0)
+        {
+            struct StateGroup
+            {
+                uint32 stateGroupID;
                 ubyte stateSyncType;
                 ubyte numStates;
-                if(numStates > 0) {
-                    struct State {
-                        uint32 stateId;
-                        uint32 stateInstanceId;
+                if (numStates > 0)
+                {
+                    struct State
+                    {
+                        uint32 stateID;
+                        uint32 stateInstanceID;
                     } states[numStates];
                 }
-            } stateGroups[numStateGroups] <optimize=false>; 
+            } stateGroups[numStateGroups]<optimize = false>;
         }
     } stateChunk;
-    struct InitialRTPC {
+    struct InitialRTPC
+    {
         uint16 numRTPC;
-        Assert(numRTPC == 0, "Error: InitialRTPC is not implemented");
+        if (numRTPC > 0)
+        {
+            struct RTPC
+            {
+                uint32 rtpcID;
+                ubyte rtpcType;
+                ubyte rtpcAccum;
+                ubyte paramID;
+                uint32 rtpcCurveID;
+                ubyte eScaling;
+
+                uint16 numPoints;
+                if (numPoints > 0)
+                {
+                    RTPCGraphPoint graphPoints[numPoints];
+                }
+            } rtpcs[numRTPC]<optimize = false>;
+        }
     } initialRTPC;
 };
 
-typedef struct MusicNodeParams {
+typedef struct MusicNodeParams
+{
     ubyte flags;
     NodeBaseParam nodeBaseParam;
-    struct Children {
+    struct Children
+    {
         uint32 numChildren;
-        if(numChildren > 0)
-            uint32 childId[numChildren];
+        if (numChildren > 0)
+            uint32 childID[numChildren];
     } children;
-    struct MeterInfo {
-        double gridPeriod;
-        double gridOffset;
+    struct MeterInfo
+    {
+        double grIDPeriod;
+        double grIDOffset;
         float tempo;
         ubyte timeSigNumBeatsBar;
         ubyte timeSigBeatValue;
@@ -211,37 +270,45 @@ typedef struct MusicNodeParams {
     Assert(numStingers == 0, "Error: Stingers are not implemented");
 };
 
-typedef struct MusicTransitions {
-    typedef struct FadeParams {
+typedef struct MusicTransitions
+{
+    typedef struct FadeParams
+    {
         int32 transitionTime;
         uint32 fadeCurve;
         int32 fadeOffset;
     };
 
     uint32 numTransitions;
-    if(numTransitions > 0) {
-        struct Transition {
+    if (numTransitions > 0)
+    {
+        struct Transition
+        {
             uint32 numSrc;
-            if(numSrc > 0) {
-                int32 srcId[numSrc];
+            if (numSrc > 0)
+            {
+                int32 srcID[numSrc];
             }
 
             uint32 numDst;
-            if(numSrc > 0) {
-                int32 dstId[numDst];
+            if (numSrc > 0)
+            {
+                int32 dstID[numDst];
             }
 
-            struct MusicTransSrcRule {
+            struct MusicTransSrcRule
+            {
                 FadeParams fadeParam;
                 uint32 syncType;
                 uint32 cueFilterHash;
                 ubyte playPostExit;
             } srcRule;
 
-            struct MusicTransDstRule {
+            struct MusicTransDstRule
+            {
                 FadeParams fadeParam;
                 uint32 cueFilterhash;
-                uint32 jumpToId;
+                uint32 jumpToID;
                 uint16 jumpToType;
                 uint16 entryType;
                 ubyte playPreEntry;
@@ -249,31 +316,38 @@ typedef struct MusicTransitions {
             } dstRule;
 
             ubyte allocTransitionObjFlag;
-            if(allocTransitionObjFlag) {
-                struct TransitionObj {
-                    uint32 segmentId;
+            if (allocTransitionObjFlag)
+            {
+                struct TransitionObj
+                {
+                    uint32 segmentID;
                     FadeParams fadeInParam, fadeOutParam;
                     ubyte playPreEntry;
                     ubyte playPostExit;
                 } transitionObj;
             }
-        } transitions[numTransitions] <optimize=false>;
+        } transitions[numTransitions]<optimize = false>;
     }
 };
 
 const int TREE_NODE_SIZE = 12;
 
-typedef struct DecisionTree {
-    // Tree is stored by depth: first the root, then all of the depth-1 
+typedef struct DecisionTree
+{
+    // Tree is stored by depth: first the root, then all of the depth-1
     // nodes, ..., and lastly all of the leaf nodes.
     // Parsing is done via DFS.
 
-    typedef struct TreeNode(int treeStartPos, uint32 depth) {
+    typedef struct TreeNode(int treeStartPos, uint32 depth)
+    {
         uint32 key;
 
-        if(depth == 0) { // leaf
-            uint32 audioNodeId;
-        } else {
+        if (depth == 0)
+        { // leaf
+            uint32 audioNodeID;
+        }
+        else
+        {
             uint16 childrenStartIdx;
             uint16 numChildren;
         }
@@ -281,100 +355,113 @@ typedef struct DecisionTree {
         uint16 weight;
         uint16 probability;
 
-        if(depth > 0) {
+        if (depth > 0)
+        {
             parseTreeNodeChildren(treeStartPos, depth, childrenStartIdx, numChildren);
         }
     };
 
     uint32 depth;
-    if(depth > 0) {
-        struct TreeDepthGroupInfo {
-            uint32 groupId;
+    if (depth > 0)
+    {
+        struct TreeDepthGroupInfo
+        {
+            uint32 groupID;
             ubyte groupType;
         } groupInfos[depth];
     }
-    
+
     uint32 size;
     ubyte mode;
 
-    if(size > 0) {
+    if (size > 0)
+    {
         TreeNode root(FTell(), depth);
         FSkip(size - TREE_NODE_SIZE);
     }
 };
 
-void parseTreeNodeChildren(int treeStartPos, uint32 depth, uint16 childrenStartIdx, uint16 numChildren) {
+void parseTreeNodeChildren(int treeStartPos, uint32 depth, uint16 childrenStartIdx, uint16 numChildren)
+{
     local int pos = FTell();
     FSeek(treeStartPos + childrenStartIdx * TREE_NODE_SIZE);
-    TreeNode children(treeStartPos, depth - 1)[numChildren] <optimize=false>;
+    TreeNode children(treeStartPos, depth - 1)[numChildren]<optimize = false>;
     FSeek(pos);
 }
 
-typedef struct HIRCItem {
+typedef struct HIRCItem
+{
     parseHIRCItemHeader();
     ubyte data[size - 4];
 };
 
-typedef struct HIRCState {
+typedef struct HIRCState
+{
     parseHIRCItemHeader();
     HIRCPropBundle props(2);
 };
 
-typedef struct HIRCMusicSegment {
+typedef struct HIRCMusicSegment
+{
     parseHIRCItemHeader();
     MusicNodeParams musicNodeParams;
     double duration;
     uint32 numMarkers;
-    if(numMarkers > 0) {
-        struct Marker {
-            uint32 id;
-            double pos <fgcolor=cDkBlue>; 
+    if (numMarkers > 0)
+    {
+        struct Marker
+        {
+            uint32 ID;
+            double pos<fgcolor = cDkBlue>;
             string name;
-        } markers[numMarkers] <optimize=false>;
+        } markers[numMarkers]<optimize = false>;
     }
 };
 
-typedef struct HIRCMusicTrack {
+typedef struct HIRCMusicTrack
+{
     parseHIRCItemHeader();
     ubyte flags;
 
     uint32 numSources;
-    if(numSources > 0) {
-        struct Source {
-            uint32 pluginId;
-            ubyte streamType <fgcolor=cDkBlue>;
-            uint32 sourceId <fgcolor=cDkBlue>;
-            uint32 inMemoryMediaSize <fgcolor=cDkBlue>;
+    if (numSources > 0)
+    {
+        struct Source
+        {
+            uint32 pluginID;
+            ubyte streamType<fgcolor = cDkBlue>;
+            uint32 sourceID<fgcolor = cDkBlue>;
+            uint32 inMemoryMediaSize<fgcolor = cDkBlue>;
             ubyte sourceBits;
         } sources[numSources];
     }
 
     uint32 numPlaylistItems;
-    if(numPlaylistItems > 0) {
-        struct PlaylistItem {
-            uint32 trackId;
-            uint32 sourceId;
-            uint32 eventId;
-            double playAt <fgcolor=cDkBlue>;
-            double beginTrimOffset <fgcolor=cDkBlue>;
-            double endTrimOffset <fgcolor=cDkBlue>;
-            double srcDuration <fgcolor=cDkBlue>;
+    if (numPlaylistItems > 0)
+    {
+        struct PlaylistItem
+        {
+            uint32 trackID;
+            uint32 sourceID;
+            uint32 eventID;
+            double playAt<fgcolor = cDkBlue>;
+            double beginTrimOffset<fgcolor = cDkBlue>;
+            double endTrimOffset<fgcolor = cDkBlue>;
+            double srcDuration<fgcolor = cDkBlue>;
         } playlistItems[numPlaylistItems];
     }
 
     uint32 numSubTrack;
     uint32 numClipAutomations;
-    if(numClipAutomations > 0) {
-        struct ClipAutomation {
+    if (numClipAutomations > 0)
+    {
+        struct ClipAutomation
+        {
             uint32 clipIndx;
             uint32 autoType;
             uint32 numPoints;
-            struct RTPCGraphPoint {
-                float from;
-                float to;
-                uint32 interp;
-            } graphPoints[numPoints];
-        } clipAutomation[numClipAutomations] <optimize=false>; 
+            RTPCGraphPoint graphPoints[numPoints];
+        } clipAutomation[numClipAutomations]<optimize = false>;
     }
 
     NodeBaseParam nodeBaseParam;
@@ -383,17 +470,20 @@ typedef struct HIRCMusicTrack {
     uint32 lookAheadTime;
 };
 
-typedef struct HIRCSeqContainer {
+typedef struct HIRCSeqContainer
+{
     parseHIRCItemHeader();
 
     MusicNodeParams musicNodeParams;
     MusicTransitions transitions;
 
     uint32 numPlaylistItems;
-    if(numPlaylistItems > 0) {
-        struct SeqPlayListItem {
-            uint32 segmentId;
-            uint32 playlistItemId;
+    if (numPlaylistItems > 0)
+    {
+        struct SeqPlayListItem
+        {
+            uint32 segmentID;
+            uint32 playlistItemID;
             uint32 numChildren;
             uint32 seqType;
             uint16 loop;
@@ -407,7 +497,8 @@ typedef struct HIRCSeqContainer {
     }
 };
 
-typedef struct HIRCSwitchContainer {
+typedef struct HIRCSwitchContainer
+{
     parseHIRCItemHeader();
 
     MusicNodeParams musicNodeParams;
@@ -416,114 +507,125 @@ typedef struct HIRCSwitchContainer {
     DecisionTree tree;
 };
 
-string getHIRCTypeName( ubyte type ) {
-    switch(type) {
-        case 1:
-            return "State";
-        case 2:
-            return "Sound SFX/Voice";
-        case 3:
-            return "Event Action";
-        case 4:
-            return "Event";
-        case 5:
-            return "Random/Seq Container";
-        case 6:
-            return "Switch Container";
-        case 7:
-            return "Actor-Mixer";
-        case 8:
-            return "Audio Bus";
-        case 9:
-            return "Blend Container";
-        case 10:
-            return "Music Segment";
-        case 11:
-            return "Music Track";
-        case 12:
-            return "Music Switch Container";
-        case 13:
-            return "Music Sequence Container";
-        case 14:
-            return "Attenuation";
-        case 15:
-            return "Dialogue Event";
-        case 16:
-            return "Motion Bus";
-        case 17:
-            return "Motion FX";
-        case 18:
-            return "Effect";
-        case 20:
-            return "Auxiliary Bus";
-        default:
-            return "Unknown";
+string getHIRCTypeName(ubyte type)
+{
+    switch (type)
+    {
+    case 1:
+        return "State";
+    case 2:
+        return "Sound SFX/Voice";
+    case 3:
+        return "Event Action";
+    case 4:
+        return "Event";
+    case 5:
+        return "Random/Seq Container";
+    case 6:
+        return "Switch Container";
+    case 7:
+        return "Actor-Mixer";
+    case 8:
+        return "Audio Bus";
+    case 9:
+        return "Blend Container";
+    case 10:
+        return "Music Segment";
+    case 11:
+        return "Music Track";
+    case 12:
+        return "Music Switch Container";
+    case 13:
+        return "Music Sequence Container";
+    case 14:
+        return "Attenuation";
+    case 15:
+        return "Dialogue Event";
+    case 16:
+        return "Motion Bus";
+    case 17:
+        return "Motion FX";
+    case 18:
+        return "Effect";
+    case 20:
+        return "Auxiliary Bus";
+    default:
+        return "Unknown";
     }
 }
 
-void parseHIRCItemHeader() {
+void parseHIRCItemHeader()
+{
     local uint32 startPos = FTell();
     ubyte type;
     uint32 size;
-    uint32 uid <fgcolor=cBlack>;
+    uint32 uID<fgcolor = cBlack>;
 }
 
-void parseHIRCItem(int styleId) {
-    if(styleId == 0) 
+void parseHIRCItem(int styleID)
+{
+    if (styleID == 0)
         SetStyle(sSection1);
     else
         SetStyle(sSection2);
     local ubyte type = ReadByte();
-    switch(type) {
-        case 1:
-            HIRCState item <name=getHIRCTypeName(type)>;
-            break;
-        case 10:
-            HIRCMusicSegment item <name=getHIRCTypeName(type)>;
-            break;
-        case 11:
-            HIRCMusicTrack item <name=getHIRCTypeName(type)>;
-            break;
-        case 12:
-            HIRCSwitchContainer item <name=getHIRCTypeName(type)>;
-            break;
-        case 13:
-            HIRCSeqContainer item <name=getHIRCTypeName(type)>;
-            break;
-        default:
-            HIRCItem item <name=getHIRCTypeName(type)>;
-            break;
+    switch (type)
+    {
+    case 1:
+        HIRCState item<name = getHIRCTypeName(type)>;
+        break;
+    case 10:
+        HIRCMusicSegment item<name = getHIRCTypeName(type)>;
+        break;
+    case 11:
+        HIRCMusicTrack item<name = getHIRCTypeName(type)>;
+        break;
+    case 12:
+        HIRCSwitchContainer item<name = getHIRCTypeName(type)>;
+        break;
+    case 13:
+        HIRCSeqContainer item<name = getHIRCTypeName(type)>;
+        break;
+    default:
+        HIRCItem item<name = getHIRCTypeName(type)>;
+        break;
     }
 }
 
 local string start = ReadString(FTell(), 4);
-if(start == "BKHD"){
+if (start == "BKHD")
+{
     local int numSections = 0;
     local string sectionName;
-    while(!FEof()) {
+    while (!FEof())
+    {
         sectionName = ReadString(FTell(), 4);
-        switch(sectionName) {
-            case "BKHD":
-                BKHDSection bkhd;
-                break;
-            case "HIRC":
-                HIRCSection hirc;
-                break;
-            case "DIDX":
-                DIDXSection didx;
-                break;
-            case "DATA":
-                DATASection data;
-                break;
-            default:
-                Section section;
-                break;
+        switch (sectionName)
+        {
+        case "BKHD":
+            BKHDSection bkhd;
+            break;
+        case "HIRC":
+            HIRCSection hirc;
+            break;
+        case "DIDX":
+            DIDXSection didx;
+            break;
+        case "DATA":
+            DATASection data;
+            break;
+        default:
+            Section section;
+            break;
         }
         numSections++;
     }
-} else {
+}
+else
+{
     local int numHIRCItems = 0;
-    while(!FEof()) {
+    while (!FEof())
+    {
         parseHIRCItem(numHIRCItems % 2);
         numHIRCItems++;
     }
