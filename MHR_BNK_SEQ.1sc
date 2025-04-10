@@ -25,38 +25,38 @@ if(numHIRCItems != 7
     MessageBox(idOk, TITLE, "Invalid sequence template.");
 }
 
-local uint32 wemId = InputNumber(TITLE, "Wem ID:", "0");
-if(wemId == BAD_VALUE) {
+local uint32 wemID = InputNumber(TITLE, "Wem ID:", "0");
+if(wemID == BAD_VALUE) {
     MessageBox(idOk, TITLE, "Invalid wem ID.");
     return -1;
 }
     
 local float songStart = InputFloat(TITLE, "Song start (s):", "0");
-if(wemId == BAD_VALUE) {
+if(wemID == BAD_VALUE) {
     MessageBox(idOk, TITLE, "Invalid song start value.");
     return -1;
 }  
     
 local float loopStart = InputFloat(TITLE, "Loop start (s):", "0");
-if(wemId == BAD_VALUE) {
+if(wemID == BAD_VALUE) {
     MessageBox(idOk, TITLE, "Invalid loop start value.");
     return -1;
 }
     
 local float loopEnd = InputFloat(TITLE, "Loop end (s):", "0");
-if(wemId == BAD_VALUE) {
+if(wemID == BAD_VALUE) {
     MessageBox(idOk, TITLE, "Invalid loop end value.");
     return -1;
 }
     
 local float songTotal = InputFloat(TITLE, "Song total (s):", "0");
-if(wemId == BAD_VALUE) {
+if(wemID == BAD_VALUE) {
     MessageBox(idOk, TITLE, "Invalid song total value.");
     return -1;
 }
 
 local float volumn = InputFloat(TITLE, "Volumn (Db):", "-7");
-if(wemId == BAD_VALUE) {
+if(wemID == BAD_VALUE) {
     MessageBox(idOk, TITLE, "Invalid volumn.");
     return -1;
 }
@@ -71,45 +71,45 @@ local float b = songStart - loopStart;
 local float c = loopEnd - a;
 local float d = -songStart - songTotal;
 
-// randomly create node uids
-local uint32 uid0 = randUID();
-item[0].uid = uid0;
-item[1].musicNodeParams.children.childId[0] = uid0;
+// randomly create node uIDs
+local uint32 uID0 = randUID();
+item[0].uID = uID0;
+item[1].musicNodeParams.children.childID[0] = uID0;
 
-local uint32 uid1 = randUID();
-item[1].uid = uid1;
-item[0].nodeBaseParam.parentId = uid1;
-item[6].musicNodeParams.children.childId[0] = uid1;
-item[6].playlistItems[1].segmentId = uid1;
+local uint32 uID1 = randUID();
+item[1].uID = uID1;
+item[0].nodeBaseParam.parentID = uID1;
+item[6].musicNodeParams.children.childID[0] = uID1;
+item[6].playlistItems[1].segmentID = uID1;
 
-local uint32 uid2 = randUID();
-item[2].uid = uid2;
-item[3].musicNodeParams.children.childId[0] = uid2;
+local uint32 uID2 = randUID();
+item[2].uID = uID2;
+item[3].musicNodeParams.children.childID[0] = uID2;
 
-local uint32 uid3 = randUID();
-item[3].uid = uid3;
-item[2].nodeBaseParam.parentId = uid3;
-item[6].musicNodeParams.children.childId[1] = uid3;
-item[6].playlistItems[2].segmentId = uid3;
+local uint32 uID3 = randUID();
+item[3].uID = uID3;
+item[2].nodeBaseParam.parentID = uID3;
+item[6].musicNodeParams.children.childID[1] = uID3;
+item[6].playlistItems[2].segmentID = uID3;
 
-local uint32 uid4 = randUID();
-item[4].uid = uid4;
-item[6].musicNodeParams.nodeBaseParam.stateChunk.stateGroups[0].states[0].stateInstanceId = uid4;
+local uint32 uID4 = randUID();
+item[4].uID = uID4;
+item[6].musicNodeParams.nodeBaseParam.stateChunk.stateGroups[0].states[0].stateInstanceID = uID4;
 
-local uint32 uid5 = randUID();
-item[5].uid = uid5;
-item[6].musicNodeParams.nodeBaseParam.stateChunk.stateGroups[1].states[0].stateInstanceId = uid5;
+local uint32 uID5 = randUID();
+item[5].uID = uID5;
+item[6].musicNodeParams.nodeBaseParam.stateChunk.stateGroups[1].states[0].stateInstanceID = uID5;
 
-local uint32 uid6 = randUID();
-item[6].uid = uid6;
-item[1].musicNodeParams.nodeBaseParam.parentId = uid6;
-item[3].musicNodeParams.nodeBaseParam.parentId = uid6;
+local uint32 uID6 = randUID();
+item[6].uID = uID6;
+item[1].musicNodeParams.nodeBaseParam.parentID = uID6;
+item[3].musicNodeParams.nodeBaseParam.parentID = uID6;
 
 // edit wem id
-item[0].sources[0].sourceId = wemId;
-item[0].playlistItems[0].sourceId = wemId;
-item[2].sources[0].sourceId = wemId;
-item[2].playlistItems[0].sourceId = wemId;
+item[0].sources[0].sourceID = wemID;
+item[0].playlistItems[0].sourceID = wemID;
+item[2].sources[0].sourceID = wemID;
+item[2].playlistItems[0].sourceID = wemID;
 
 // edit loop values
 item[0].playlistItems[0].playAt = songStart;
@@ -128,4 +128,4 @@ item[2].playlistItems[0].srcDuration = songTotal;
 item[3].duration = c;
 item[3].markers[1].pos = c;
 
-Printf("Sequence container uid: %Ld\n", uid6);
+Printf("Sequence container uID: %Ld\n", uID6);
