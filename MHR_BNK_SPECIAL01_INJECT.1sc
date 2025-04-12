@@ -69,27 +69,27 @@ for(idx = 0; idx < hirc.items.item[SWITCH_ID_1].tree.root.numChildren; idx++) {
     }
 }
 Printf("insert idx: %d\n", idx);
-// 2. Change all of the existing childStartIDx values
+// 2. Change all of the existing childStartIdx values
 local int i, j;
 for(i = 0; i < idx; i++) {
-     hirc.items.item[SWITCH_ID_1].tree.root.children[i].childrenStartIDx += 1;
+     hirc.items.item[SWITCH_ID_1].tree.root.children[i].childrenStartIdx += 1;
 }
 for(i = idx; i < hirc.items.item[SWITCH_ID_1].tree.root.numChildren; i++) {
-     hirc.items.item[SWITCH_ID_1].tree.root.children[i].childrenStartIDx += 2;
+     hirc.items.item[SWITCH_ID_1].tree.root.children[i].childrenStartIdx += 2;
 }
 // 3. Insert 3 new nodes
 local int pos;
 pos = startof(hirc.items.item[SWITCH_ID_1].tree.root.children[idx - 1]) + TREE_NODE_SIZE;
-local int childStartIDx = hirc.items.item[SWITCH_ID_1].tree.root.children[idx - 1].childrenStartIDx + 1;
-Printf("child start: %d\n", childStartIDx);
+local int childStartIdx = hirc.items.item[SWITCH_ID_1].tree.root.children[idx - 1].childrenStartIdx + 1;
+Printf("child start: %d\n", childStartIdx);
 InsertBytes(pos, TREE_NODE_SIZE);
 WriteUInt(pos, hash);                   // hash of the trigger, can be set via lua
-WriteUShort(pos + 4, childStartIDx);    // childStartPos
+WriteUShort(pos + 4, childStartIdx);    // childStartPos
 WriteUShort(pos + 6, 1);                // numChildren
 WriteUShort(pos + 8, 50);               // weight
 WriteUShort(pos + 10, 100);             // probability
 
-pos = startof(hirc.items.item[SWITCH_ID_1].tree.root) + childStartIDx * TREE_NODE_SIZE;
+pos = startof(hirc.items.item[SWITCH_ID_1].tree.root) + childStartIdx * TREE_NODE_SIZE;
 InsertBytes(pos, TREE_NODE_SIZE);
 WriteUInt(pos, HASH_TYPE1);             // hash of string "type1"
 WriteUInt(pos + 4, nodeID);             // audioNodeID
@@ -117,33 +117,33 @@ for(idx = 0; idx < hirc.items.item[SWITCH_ID_0].tree.root.numChildren; idx++) {
     }
 }
 Printf("insert idx: %d\n", idx);
-// 2. Change all of the existing childStartIDx values
+// 2. Change all of the existing childStartIdx values
 for(i = 0; i < idx; i++) {
-     hirc.items.item[SWITCH_ID_0].tree.root.children[i].childrenStartIDx += 1;
+     hirc.items.item[SWITCH_ID_0].tree.root.children[i].childrenStartIdx += 1;
      for(j = 0; j < hirc.items.item[SWITCH_ID_0].tree.root.children[i].numChildren; j++)
-        hirc.items.item[SWITCH_ID_0].tree.root.children[i].children[j].childrenStartIDx += 1;
+        hirc.items.item[SWITCH_ID_0].tree.root.children[i].children[j].childrenStartIdx += 1;
 }
 for(i = idx; i < hirc.items.item[SWITCH_ID_0].tree.root.numChildren; i++) {
-     hirc.items.item[SWITCH_ID_0].tree.root.children[i].childrenStartIDx += 3;
+     hirc.items.item[SWITCH_ID_0].tree.root.children[i].childrenStartIdx += 3;
      for(j = 0; j < hirc.items.item[SWITCH_ID_0].tree.root.children[i].numChildren; j++)
-        hirc.items.item[SWITCH_ID_0].tree.root.children[i].children[j].childrenStartIDx += 3;
+        hirc.items.item[SWITCH_ID_0].tree.root.children[i].children[j].childrenStartIdx += 3;
 }
 // 3. Insert 3 new nodes
 pos = startof(hirc.items.item[SWITCH_ID_0].tree.root.children[idx - 1]) + TREE_NODE_SIZE;
-local int childStartIDx1 = hirc.items.item[SWITCH_ID_0].tree.root.children[idx - 1].childrenStartIDx + 2;
-local int childStartIDx2 = hirc.items.item[SWITCH_ID_0].tree.root.children[idx - 1].children[0].childrenStartIDx + 2;
+local int childStartIdx1 = hirc.items.item[SWITCH_ID_0].tree.root.children[idx - 1].childrenStartIdx + 2;
+local int childStartIdx2 = hirc.items.item[SWITCH_ID_0].tree.root.children[idx - 1].children[0].childrenStartIdx + 2;
 
 InsertBytes(pos, TREE_NODE_SIZE);
 WriteUInt(pos, hash);                   // hash of the trigger, can be set via lua
-WriteUShort(pos + 4, childStartIDx1);   // childStartPos
+WriteUShort(pos + 4, childStartIdx1);   // childStartPos
 WriteUShort(pos + 6, 1);                // numChildren
 WriteUShort(pos + 8, 50);               // weight
 WriteUShort(pos + 10, 100);             // probability
 
-pos = startof(hirc.items.item[SWITCH_ID_0].tree.root) + childStartIDx1 * TREE_NODE_SIZE;
+pos = startof(hirc.items.item[SWITCH_ID_0].tree.root) + childStartIdx1 * TREE_NODE_SIZE;
 InsertBytes(pos, TREE_NODE_SIZE * 2);
 WriteUInt(pos, HASH_TYPE1);             // hash of string "type1"
-WriteUShort(pos + 4, childStartIDx2);   // childStartPos
+WriteUShort(pos + 4, childStartIdx2);   // childStartPos
 WriteUShort(pos + 6, 1);                // numChildren
 WriteUShort(pos + 8, 50);               // weight
 WriteUShort(pos + 10, 100);             // probability
